@@ -1,89 +1,230 @@
 <section class="producto">
-  <h2>Gestión de productos</h2>
+  <header class="cabecera">
+    <div class="titulo">
+      <svg class="icono icono-titulo" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M16.5 9.4 7.55 4.24" />
+        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+        <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
+        <line x1="12" y1="22.08" x2="12" y2="12" />
+      </svg>
+      <div>
+        <h2>Gestión de productos</h2>
+        <p class="subtitulo">Los cambios de Firestore aparecen aquí en tiempo real.</p>
+      </div>
+    </div>
+  </header>
 
   @if (mensaje(); as m) {
-    <p class="mensaje" [class.error]="m.tipo === 'error'">{{ m.texto }}</p>
-  }
-  @if (error(); as e) {
-    <p class="mensaje error">{{ e }}</p>
-  }
-
-  <form class="formulario" [formGroup]="form" (ngSubmit)="guardar()">
-    <h3>{{ editando() ? 'Editar producto' : 'Nuevo producto' }}</h3>
-
-    <label>
-      Nombre
-      <input type="text" formControlName="nombre" />
-    </label>
-    @if (form.controls.nombre.touched && form.controls.nombre.invalid) {
-      <small class="campo-error">El nombre debe tener al menos 2 caracteres.</small>
-    }
-
-    <label>
-      Precio
-      <input type="number" min="0" step="0.01" formControlName="precio" />
-    </label>
-    @if (form.controls.precio.touched && form.controls.precio.invalid) {
-      <small class="campo-error">El precio no puede ser negativo.</small>
-    }
-
-    <label>
-      Stock
-      <input type="number" min="0" step="1" formControlName="stock" />
-    </label>
-    @if (form.controls.stock.touched && form.controls.stock.invalid) {
-      <small class="campo-error">El stock no puede ser negativo.</small>
-    }
-
-    <label>
-      Categoría
-      <input type="text" formControlName="categoria" />
-    </label>
-    @if (form.controls.categoria.touched && form.controls.categoria.invalid) {
-      <small class="campo-error">La categoría es obligatoria.</small>
-    }
-
-    <div class="acciones">
-      <button type="submit" [disabled]="guardando()">
-        {{ editando() ? 'Actualizar' : 'Crear' }}
-      </button>
-      @if (editando()) {
-        <button type="button" class="secundario" (click)="cancelar()">Cancelar</button>
+    <div class="alerta" [class.error]="m.tipo === 'error'" role="status">
+      @if (m.tipo === 'ok') {
+        <svg class="icono" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+          <polyline points="22 4 12 14.01 9 11.01" />
+        </svg>
+      } @else {
+        <svg class="icono" viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="12" r="10" />
+          <line x1="12" y1="8" x2="12" y2="12" />
+          <line x1="12" y1="16" x2="12.01" y2="16" />
+        </svg>
       }
+      <span>{{ m.texto }}</span>
     </div>
-  </form>
-
-  @if (cargando()) {
-    <p>Cargando productos…</p>
-  } @else {
-    <table>
-      <thead>
-        <tr>
-          <th>Nombre</th>
-          <th>Precio</th>
-          <th>Stock</th>
-          <th>Categoría</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (p of productos(); track p.id) {
-          <tr>
-            <td>{{ p.nombre }}</td>
-            <td>{{ p.precio | number: '1.2-2' }}</td>
-            <td>{{ p.stock }}</td>
-            <td>{{ p.categoria }}</td>
-            <td class="acciones-fila">
-              <button type="button" (click)="editar(p)">Editar</button>
-              <button type="button" class="peligro" (click)="eliminar(p)">Eliminar</button>
-            </td>
-          </tr>
-        } @empty {
-          <tr>
-            <td colspan="5">No hay productos registrados.</td>
-          </tr>
-        }
-      </tbody>
-    </table>
   }
+
+  @if (error(); as e) {
+    <div class="alerta error" role="alert">
+      <svg class="icono" viewBox="0 0 24 24" aria-hidden="true">
+        <circle cx="12" cy="12" r="10" />
+        <line x1="12" y1="8" x2="12" y2="12" />
+        <line x1="12" y1="16" x2="12.01" y2="16" />
+      </svg>
+      <span>{{ e }}</span>
+    </div>
+  }
+
+  <div class="tarjeta">
+    <h3 class="tarjeta-titulo">
+      @if (editando()) {
+        <svg class="icono" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
+        </svg>
+        Editar producto
+      } @else {
+        <svg class="icono" viewBox="0 0 24 24" aria-hidden="true">
+          <line x1="12" y1="5" x2="12" y2="19" />
+          <line x1="5" y1="12" x2="19" y2="12" />
+        </svg>
+        Nuevo producto
+      }
+    </h3>
+
+    @if (editando()) {
+      <p class="editando-aviso">Editando <code>{{ idEditando() }}</code></p>
+    }
+
+    <form class="formulario" [formGroup]="form" (ngSubmit)="guardar()">
+      <div class="formulario-grid">
+        <div class="campo">
+          <label for="nombre">Nombre</label>
+          <input id="nombre" type="text" formControlName="nombre" placeholder="Ej. Laptop Lenovo" />
+          @if (form.controls.nombre.touched && form.controls.nombre.invalid) {
+            <small class="campo-error">El nombre debe tener al menos 2 caracteres.</small>
+          }
+        </div>
+
+        <div class="campo">
+          <label for="precio">Precio (USD)</label>
+          <input id="precio" type="number" min="0" step="0.01" formControlName="precio" placeholder="0.00" />
+          @if (form.controls.precio.touched && form.controls.precio.invalid) {
+            <small class="campo-error">El precio no puede ser negativo.</small>
+          }
+        </div>
+
+        <div class="campo">
+          <label for="stock">Stock</label>
+          <input id="stock" type="number" min="0" step="1" formControlName="stock" placeholder="0" />
+          @if (form.controls.stock.touched && form.controls.stock.invalid) {
+            <small class="campo-error">El stock no puede ser negativo.</small>
+          }
+        </div>
+
+        <div class="campo">
+          <label for="categoria">Categoría</label>
+          <input id="categoria" type="text" formControlName="categoria" placeholder="Ej. Electrónica" />
+          @if (form.controls.categoria.touched && form.controls.categoria.invalid) {
+            <small class="campo-error">La categoría es obligatoria.</small>
+          }
+        </div>
+      </div>
+
+      <div class="acciones-form">
+        @if (editando()) {
+          <button type="button" class="btn btn-secundario" (click)="cancelar()">
+            <svg class="icono" viewBox="0 0 24 24" aria-hidden="true">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+            Cancelar
+          </button>
+          <button type="submit" class="btn btn-primario" [disabled]="guardando()">
+            <svg class="icono" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+              <polyline points="17 21 17 13 7 13 7 21" />
+              <polyline points="7 3 7 8 15 8" />
+            </svg>
+            Actualizar
+          </button>
+        } @else {
+          <button type="submit" class="btn btn-primario" [disabled]="guardando()">
+            <svg class="icono" viewBox="0 0 24 24" aria-hidden="true">
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+            Crear
+          </button>
+        }
+      </div>
+    </form>
+  </div>
+
+  <div class="tarjeta">
+    <div class="tabla-cabecera">
+      <h3>
+        <svg class="icono" viewBox="0 0 24 24" aria-hidden="true">
+          <line x1="8" y1="6" x2="21" y2="6" />
+          <line x1="8" y1="12" x2="21" y2="12" />
+          <line x1="8" y1="18" x2="21" y2="18" />
+          <line x1="3" y1="6" x2="3.01" y2="6" />
+          <line x1="3" y1="12" x2="3.01" y2="12" />
+          <line x1="3" y1="18" x2="3.01" y2="18" />
+        </svg>
+        Productos
+      </h3>
+      <span class="contador">
+        {{ productos().length }} {{ productos().length === 1 ? 'producto' : 'productos' }}
+      </span>
+    </div>
+
+    @if (cargando()) {
+      <div class="cargando">
+        <span class="spinner"></span>
+        <span>Cargando productos…</span>
+      </div>
+    } @else {
+      <div class="tabla-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nombre</th>
+              <th>Precio</th>
+              <th>Stock</th>
+              <th>Categoría</th>
+              <th class="col-acciones">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (p of productos(); track p.id) {
+              <tr [class.seleccionada]="idEditando() === p.id">
+                <td><code class="id">{{ p.id }}</code></td>
+                <td class="nombre">{{ p.nombre }}</td>
+                <td class="precio">$ {{ p.precio | number: '1.2-2' }}</td>
+                <td>
+                  <span
+                    class="stock"
+                    [class.bajo]="p.stock > 0 && p.stock < 10"
+                    [class.agotado]="p.stock === 0"
+                  >{{ p.stock }}</span>
+                </td>
+                <td><span class="pill">{{ p.categoria }}</span></td>
+                <td class="col-acciones">
+                  <div class="acciones-fila">
+                    <button
+                      type="button"
+                      class="btn-icono editar"
+                      title="Editar"
+                      aria-label="Editar producto"
+                      (click)="editar(p)"
+                    >
+                      <svg class="icono" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
+                      </svg>
+                    </button>
+                    <button
+                      type="button"
+                      class="btn-icono eliminar"
+                      title="Eliminar"
+                      aria-label="Eliminar producto"
+                      (click)="eliminar(p)"
+                    >
+                      <svg class="icono" viewBox="0 0 24 24" aria-hidden="true">
+                        <polyline points="3 6 5 6 21 6" />
+                        <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                        <path d="M10 11v6" />
+                        <path d="M14 11v6" />
+                        <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
+                      </svg>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="6">
+                  <div class="vacio">
+                    <svg class="icono" viewBox="0 0 24 24" aria-hidden="true">
+                      <polyline points="22 12 16 12 14 15 10 15 8 12 2 12" />
+                      <path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z" />
+                    </svg>
+                    <p>Aún no hay productos. Crea el primero con el formulario de arriba.</p>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
 </section>
