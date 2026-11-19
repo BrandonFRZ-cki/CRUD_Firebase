@@ -69,7 +69,7 @@
           <label for="nombre">Nombre</label>
           <input id="nombre" type="text" formControlName="nombre" placeholder="Ej. Laptop Lenovo" />
           @if (form.controls.nombre.touched && form.controls.nombre.invalid) {
-            <small class="campo-error">El nombre debe tener al menos 2 caracteres.</small>
+            <small class="campo-error">El nombre debe tener al menos 2 caracteres y contener texto.</small>
           }
         </div>
 
@@ -77,7 +77,7 @@
           <label for="precio">Precio (USD)</label>
           <input id="precio" type="number" min="0" step="0.01" formControlName="precio" placeholder="0.00" />
           @if (form.controls.precio.touched && form.controls.precio.invalid) {
-            <small class="campo-error">El precio no puede ser negativo.</small>
+            <small class="campo-error">El precio debe ser un número mayor o igual a cero.</small>
           }
         </div>
 
@@ -85,7 +85,7 @@
           <label for="stock">Stock</label>
           <input id="stock" type="number" min="0" step="1" formControlName="stock" placeholder="0" />
           @if (form.controls.stock.touched && form.controls.stock.invalid) {
-            <small class="campo-error">El stock no puede ser negativo.</small>
+            <small class="campo-error">El stock debe ser un número entero mayor o igual a cero.</small>
           }
         </div>
 
@@ -93,7 +93,7 @@
           <label for="categoria">Categoría</label>
           <input id="categoria" type="text" formControlName="categoria" placeholder="Ej. Electrónica" />
           @if (form.controls.categoria.touched && form.controls.categoria.invalid) {
-            <small class="campo-error">La categoría es obligatoria.</small>
+            <small class="campo-error">La categoría es obligatoria y debe contener texto.</small>
           }
         </div>
       </div>

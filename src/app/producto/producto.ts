@@ -8,6 +8,11 @@ type Mensaje = { tipo: 'ok' | 'error'; texto: string };
 
 const FORMULARIO_VACIO = { nombre: '', precio: 0, stock: 0, categoria: '' };
 
+// Al menos una letra: rechaza textos vacíos o solo con números y símbolos.
+const CONTIENE_TEXTO = /[A-Za-zÁÉÍÓÚÑáéíóúñÜü]/;
+// Solo dígitos: rechaza decimales, negativos y símbolos.
+const SOLO_ENTERO = /^\d+$/;
+
 @Component({
   selector: 'app-producto',
   imports: [ReactiveFormsModule, DecimalPipe],
@@ -28,10 +33,10 @@ export class Producto {
   protected readonly mensaje = signal<Mensaje | null>(null);
 
   protected readonly form = this.fb.nonNullable.group({
-    nombre: ['', [Validators.required, Validators.minLength(2)]],
+    nombre: ['', [Validators.required, Validators.minLength(2), Validators.pattern(CONTIENE_TEXTO)]],
     precio: [0, [Validators.required, Validators.min(0)]],
-    stock: [0, [Validators.required, Validators.min(0)]],
-    categoria: ['', Validators.required],
+    stock: [0, [Validators.required, Validators.min(0), Validators.pattern(SOLO_ENTERO)]],
+    categoria: ['', [Validators.required, Validators.pattern(CONTIENE_TEXTO)]],
   });
 
   protected async guardar(): Promise<void> {
