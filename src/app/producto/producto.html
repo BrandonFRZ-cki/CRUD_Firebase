@@ -1,0 +1,89 @@
+<section class="producto">
+  <h2>Gestión de productos</h2>
+
+  @if (mensaje(); as m) {
+    <p class="mensaje" [class.error]="m.tipo === 'error'">{{ m.texto }}</p>
+  }
+  @if (error(); as e) {
+    <p class="mensaje error">{{ e }}</p>
+  }
+
+  <form class="formulario" [formGroup]="form" (ngSubmit)="guardar()">
+    <h3>{{ editando() ? 'Editar producto' : 'Nuevo producto' }}</h3>
+
+    <label>
+      Nombre
+      <input type="text" formControlName="nombre" />
+    </label>
+    @if (form.controls.nombre.touched && form.controls.nombre.invalid) {
+      <small class="campo-error">El nombre debe tener al menos 2 caracteres.</small>
+    }
+
+    <label>
+      Precio
+      <input type="number" min="0" step="0.01" formControlName="precio" />
+    </label>
+    @if (form.controls.precio.touched && form.controls.precio.invalid) {
+      <small class="campo-error">El precio no puede ser negativo.</small>
+    }
+
+    <label>
+      Stock
+      <input type="number" min="0" step="1" formControlName="stock" />
+    </label>
+    @if (form.controls.stock.touched && form.controls.stock.invalid) {
+      <small class="campo-error">El stock no puede ser negativo.</small>
+    }
+
+    <label>
+      Categoría
+      <input type="text" formControlName="categoria" />
+    </label>
+    @if (form.controls.categoria.touched && form.controls.categoria.invalid) {
+      <small class="campo-error">La categoría es obligatoria.</small>
+    }
+
+    <div class="acciones">
+      <button type="submit" [disabled]="guardando()">
+        {{ editando() ? 'Actualizar' : 'Crear' }}
+      </button>
+      @if (editando()) {
+        <button type="button" class="secundario" (click)="cancelar()">Cancelar</button>
+      }
+    </div>
+  </form>
+
+  @if (cargando()) {
+    <p>Cargando productos…</p>
+  } @else {
+    <table>
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Precio</th>
+          <th>Stock</th>
+          <th>Categoría</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (p of productos(); track p.id) {
+          <tr>
+            <td>{{ p.nombre }}</td>
+            <td>{{ p.precio | number: '1.2-2' }}</td>
+            <td>{{ p.stock }}</td>
+            <td>{{ p.categoria }}</td>
+            <td class="acciones-fila">
+              <button type="button" (click)="editar(p)">Editar</button>
+              <button type="button" class="peligro" (click)="eliminar(p)">Eliminar</button>
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="5">No hay productos registrados.</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+</section>

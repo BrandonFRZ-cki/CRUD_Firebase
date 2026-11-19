@@ -1,0 +1,87 @@
+.producto {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  font-family: system-ui, sans-serif;
+}
+
+.formulario {
+  display: grid;
+  gap: 0.6rem;
+  padding: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+}
+
+.formulario label {
+  display: grid;
+  gap: 0.25rem;
+  font-weight: 500;
+}
+
+input {
+  padding: 0.45rem;
+  border: 1px solid #bbb;
+  border-radius: 4px;
+}
+
+button {
+  padding: 0.45rem 0.9rem;
+  border: 0;
+  border-radius: 4px;
+  background: #3b5bdb;
+  color: #fff;
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+button.secundario {
+  background: #868e96;
+}
+
+button.peligro {
+  background: #c92a2a;
+}
+
+.acciones {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.acciones-fila {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.campo-error {
+  color: #c92a2a;
+}
+
+.mensaje {
+  padding: 0.5rem 0.75rem;
+  border-radius: 4px;
+  background: #d3f9d8;
+  color: #2b8a3e;
+}
+
+.mensaje.error {
+  background: #ffe3e3;
+  color: #c92a2a;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  padding: 0.5rem;
+  border-bottom: 1px solid #eee;
+  text-align: left;
+}
